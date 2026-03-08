@@ -120,7 +120,7 @@ public class AuthenticationService
             if (secret?.Value != null)
             {
                 var certBytes = Convert.FromBase64String(secret.Value);
-                return new X509Certificate2(certBytes);
+                return X509CertificateLoader.LoadPkcs12(certBytes, password: null);
             }
         }
         catch (Exception ex)

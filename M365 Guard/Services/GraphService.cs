@@ -336,7 +336,7 @@ public class GraphService
             Console.WriteLine($"✅ Account disabled: {user.DisplayName}");
 
             // Revoke all sessions
-            await _graphClient.Users[user.Id].RevokeSignInSessions.PostAsync();
+            await _graphClient.Users[user.Id].RevokeSignInSessions.PostAsRevokeSignInSessionsPostResponseAsync();
             Console.WriteLine("✅ All active sessions revoked");
         }
         catch (Exception ex)

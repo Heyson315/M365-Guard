@@ -1,15 +1,9 @@
-﻿using Azure.Identity;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
-using M365_Guard.Services;
+﻿using M365_Guard.Services;
 using Microsoft.Extensions.Configuration;
 using OfficeOpenXml;
-using System.Globalization;
 
 // Configure EPPlus license context
 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-const string ExcelFilePath = @"C:\Users\HassanRahman\OneDrive - Rahman Finance and Accounting P.L.LC\01 M356 FINANCE AND STRATEGY\Dashboard for Kings.xlsm";
 
 // Build configuration - supports Key Vault, certificates, and Azure CLI credentials
 var configuration = new ConfigurationBuilder()
@@ -38,7 +32,7 @@ if (isMultiTenant)
 }
 
 // Check configuration - only need TenantId and ClientId (no secrets required!)
-bool isConfigValid = !string.IsNullOrEmpty(tenantId) && 
+bool isConfigValid = !string.IsNullOrEmpty(tenantId) &&
                      !string.IsNullOrEmpty(clientId);
 
 if (!isConfigValid)
@@ -48,18 +42,18 @@ if (!isConfigValid)
     Console.WriteLine("In appsettings.json, set:");
     Console.WriteLine("  • AzureAd:TenantId - Your Azure AD tenant ID");
     Console.WriteLine("  • AzureAd:ClientId - Your app registration client ID\n");
-    
+
     Console.WriteLine("Authentication Methods (in priority order):");
     Console.WriteLine("1. Certificate from Azure Key Vault (Production) ✅");
     Console.WriteLine("2. Certificate from local certificate store ✅");
     Console.WriteLine("3. Azure CLI credentials (Development) ✅\n");
-    
+
     Console.WriteLine("No client secrets needed! 🔐\n");
-    
+
     Console.WriteLine("Debug Info:");
     Console.WriteLine($"Tenant ID found: {!string.IsNullOrEmpty(tenantId)}");
     Console.WriteLine($"Client ID found: {!string.IsNullOrEmpty(clientId)}");
-    
+
     Console.WriteLine("\n═══════════════════════════════════════════════════════");
     Console.WriteLine("Press any key to exit...");
     Console.ReadKey();
@@ -87,30 +81,30 @@ try
             Console.WriteLine("   🌐 Multi-Tenant Mode");
         }
         Console.WriteLine("═══════════════════════════════════════════════════════");
-        
+
         Console.WriteLine("\n── Sign-In Audits ─────────────────────────────────────");
         Console.WriteLine("1. 📊 Export NonInteractive Sign-Ins to Excel");
         Console.WriteLine("2. 📊 Export Interactive Sign-Ins to Excel");
         Console.WriteLine("3. 📊 Export Failed Sign-Ins to Excel");
         Console.WriteLine("4. 📊 Export Risky Sign-Ins to Excel");
         Console.WriteLine("5. 📊 Export ALL Sign-In Reports");
-        
+
         Console.WriteLine("\n── Security Audit Agents ──────────────────────────────");
         Console.WriteLine("6. 🔍 Run Intune Device Audit");
         Console.WriteLine("7. 🛡️  Run Entra ID Security Audit");
         Console.WriteLine("8. 🚀 Run Full Security Scan (Parallel)");
-        
+
         Console.WriteLine("\n── Device Management ──────────────────────────────────");
         Console.WriteLine("9. 📱 Export Managed Devices to Excel");
         Console.WriteLine("10. ⚠️  Export Non-Compliant Devices to Excel");
-        
+
         Console.WriteLine("\n── User Management ────────────────────────────────────");
         Console.WriteLine("11. 🚫 Disable User Account");
         Console.WriteLine("12. 👥 Export Risky Users to Excel");
-        
+
         Console.WriteLine("\n── Configuration ──────────────────────────────────────");
         Console.WriteLine("13. ⚙️  View Current Configuration");
-        
+
         Console.WriteLine("\n0. Exit");
         Console.Write("\nSelect an option: ");
 
@@ -231,7 +225,7 @@ try
                 Console.WriteLine("\n═══════════════════════════════════════════════════════");
                 Console.WriteLine("   Security Configuration");
                 Console.WriteLine("═══════════════════════════════════════════════════════\n");
-                
+
                 var authMethod = "Unknown";
                 if (!string.IsNullOrEmpty(keyVaultUri))
                 {
@@ -245,7 +239,7 @@ try
                 {
                     authMethod = "Azure CLI Credentials (Development) 🔑";
                 }
-                
+
                 Console.WriteLine($"Authentication Method: {authMethod}");
                 if (!string.IsNullOrEmpty(keyVaultUri))
                 {
