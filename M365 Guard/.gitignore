@@ -65,7 +65,7 @@ project.fragment.lock.json
 appsettings.Production.json
 appsettings.*.json
 !appsettings.json
-!appsettings.Development.json
+# SECURITY: Do NOT whitelist appsettings.Development.json - use dotnet user-secrets instead
 secrets.json
 *.pfx
 *.p12

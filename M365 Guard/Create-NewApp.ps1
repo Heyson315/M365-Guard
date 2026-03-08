@@ -71,23 +71,56 @@ Write-Host "$tenantId" -ForegroundColor Cyan
 Write-Host "Client ID:     " -NoNewline -ForegroundColor White
 Write-Host "$appId" -ForegroundColor Cyan
 Write-Host "Client Secret: " -NoNewline -ForegroundColor White
-Write-Host "$secret" -ForegroundColor Cyan
+Write-Host "(stored securely - see below)" -ForegroundColor DarkGray
 Write-Host ""
 
+# Store secret securely using dotnet user-secrets
 Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host "   Copy these into appsettings.json" -ForegroundColor Cyan
+Write-Host "   🔐 Storing credentials securely..." -ForegroundColor Cyan
 Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Cyan
 Write-Host ""
 
+$projectPath = Split-Path -Parent $PSScriptRoot
+Push-Location $projectPath
+try {
+    # Initialize user secrets if not already done
+    dotnet user-secrets init --project "M365 Guard" 2>$null
+    
+    # Store credentials in user secrets (NOT in appsettings.json)
+    dotnet user-secrets set "AzureAd:TenantId" "$tenantId" --project "M365 Guard" | Out-Null
+    dotnet user-secrets set "AzureAd:ClientId" "$appId" --project "M365 Guard" | Out-Null
+    dotnet user-secrets set "AzureAd:ClientSecret" "$secret" --project "M365 Guard" | Out-Null
+    
+    Write-Host "✅ Credentials stored in .NET User Secrets!" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "   Location: %APPDATA%\Microsoft\UserSecrets\" -ForegroundColor DarkGray
+    Write-Host "   These are NOT in source control." -ForegroundColor DarkGray
+} catch {
+    Write-Host "⚠️  Could not store in user-secrets. Manual setup required:" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "   dotnet user-secrets set 'AzureAd:ClientSecret' '<your-secret>'" -ForegroundColor White
+}
+finally {
+    Pop-Location
+}
+
+Write-Host ""
+Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Yellow
+Write-Host "   ⚠️  SECURITY WARNING" -ForegroundColor Yellow
+Write-Host "═══════════════════════════════════════════════════════" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "   NEVER add ClientSecret to appsettings.json!" -ForegroundColor Red
+Write-Host "   For production, use certificate auth or Azure Key Vault." -ForegroundColor White
+Write-Host ""
+Write-Host "   appsettings.json should only contain:" -ForegroundColor White
 Write-Host @"
 {
   "AzureAd": {
     "TenantId": "$tenantId",
-    "ClientId": "$appId",
-    "ClientSecret": "$secret"
+    "ClientId": "$appId"
   }
 }
-"@ -ForegroundColor Yellow
+"@ -ForegroundColor DarkGray
 
 Write-Host ""
 Write-Host "Press any key to exit..." -ForegroundColor Gray
